@@ -30,6 +30,11 @@ This repository is a derivative work based on [nullkal/UniSense](https://github.
 Original copyright remains with the original author where applicable.
 Modifications in this fork are maintained by this fork's owner.
 
+## Fork Changes
+
+This fork updates DualSense haptics behavior to use accurate rumble emulation by default.
+Legacy rumble emulation is still available as an optional mode.
+
 ## License
 
 This project is distributed under the MIT License.
