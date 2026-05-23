@@ -9,6 +9,12 @@ using UnityEngine.Scripting;
 
 namespace UniSense
 {
+    public enum DualSenseRumbleEmulationMode
+    {
+        Accurate,
+        Legacy,
+    }
+
     [InputControlLayout(
         stateType = typeof(DualSenseHIDInputReport),
         displayName = "PS5 Controller")]
@@ -18,6 +24,9 @@ namespace UniSense
 #endif
     public class DualSenseGamepadHID : DualShockGamepad
     {
+        public DualSenseRumbleEmulationMode RumbleEmulationMode { get; set; } =
+            DualSenseRumbleEmulationMode.Accurate;
+
         public ButtonControl leftTriggerButton { get; protected set; }
         public ButtonControl rightTriggerButton { get; protected set; }
         public ButtonControl playStationButton { get; protected set; }
@@ -135,7 +144,11 @@ namespace UniSense
                 return;
 
             var command = DualSenseHIDOutputReport.Create();
-            if (MotorHasValue) command.SetMotorSpeeds(m_LowFrequencyMotorSpeed.Value, m_HighFrequenceyMotorSpeed.Value);
+            if (MotorHasValue)
+            {
+                command.SetRumbleEmulationMode(RumbleEmulationMode);
+                command.SetMotorSpeeds(m_LowFrequencyMotorSpeed.Value, m_HighFrequenceyMotorSpeed.Value);
+            }
             if (LeftTriggerHasValue) command.SetLeftTriggerState(m_leftTriggerState.Value);
             if (RightTriggerHasValue) command.SetRightTriggerState(m_rightTriggerState.Value);
 
@@ -153,6 +166,7 @@ namespace UniSense
         public override void SetMotorSpeeds(float lowFrequency, float highFrequency)
         {
             var command = DualSenseHIDOutputReport.Create();
+            command.SetRumbleEmulationMode(RumbleEmulationMode);
             command.SetMotorSpeeds(lowFrequency, highFrequency);
 
             ExecuteCommand(ref command);
@@ -174,6 +188,7 @@ namespace UniSense
             if (state.Motor.HasValue)
             {
                 var motor = state.Motor.Value;
+                command.SetRumbleEmulationMode(RumbleEmulationMode);
                 command.SetMotorSpeeds(motor.LowFrequencyMotorSpeed, motor.HighFrequenceyMotorSpeed);
                 m_LowFrequencyMotorSpeed = motor.LowFrequencyMotorSpeed;
                 m_HighFrequenceyMotorSpeed = motor.HighFrequenceyMotorSpeed;

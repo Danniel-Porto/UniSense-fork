@@ -44,6 +44,7 @@ namespace UniSense.LowLevel
         {
             PlayerLedBrightness = 0x01,
             LightBarFade        = 0x02,
+            ImprovedRumbleEmulation = 0x04,
         }
 
         internal enum InternalPlayerLedBrightness : byte
@@ -89,6 +90,22 @@ namespace UniSense.LowLevel
             flags1 |= Flags1.MainMotors1 | Flags1.MainMotors2;
             lowFrequencyMotorSpeed = (byte)Mathf.Clamp(lowFreq * 255, 0, 255);
             highFrequencyMotorSpeed = (byte)Mathf.Clamp(highFreq * 255, 0, 255);
+        }
+
+        public void SetRumbleEmulationMode(DualSenseRumbleEmulationMode mode)
+        {
+            ledFlags &= ~(LedFlags.LightBarFade | LedFlags.ImprovedRumbleEmulation);
+            switch (mode)
+            {
+                case DualSenseRumbleEmulationMode.Accurate:
+                    ledFlags |= LedFlags.LightBarFade | LedFlags.ImprovedRumbleEmulation;
+                    break;
+                case DualSenseRumbleEmulationMode.Legacy:
+                    ledFlags |= LedFlags.LightBarFade;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
         }
 
         public void ResetMotorSpeeds(bool resetImmediately = false)
